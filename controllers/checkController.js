@@ -3,7 +3,7 @@ import parser from 'parse-neo4j';
 
 export const check = async (req, res) => {
 
-    const query = `MATCH (b:Book) RETURN b;`;
+    const query = `MATCH (n:DemoUser) RETURN n;`;
     const context = {};
     const result = parser.parse(await driver.executeQuery(query,context));
 
