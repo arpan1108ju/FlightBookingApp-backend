@@ -1,7 +1,7 @@
 import driver from "../utils/neo4j-driver.js";
 import parser from 'parse-neo4j';
 
-export const check = async (req, res) => {
+export const check =  async (req, res) => {
 
     const query = `MATCH (b:Book) RETURN b;`;
     const context = {};
