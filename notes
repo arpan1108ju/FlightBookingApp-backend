@@ -1,0 +1,2 @@
+In google oauth2 authentication session is required but since we are using jwt inside google 
+so no session is created and serializeUser and  is not being used
