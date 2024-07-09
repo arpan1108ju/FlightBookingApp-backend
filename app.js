@@ -2,7 +2,7 @@ import express from "express";
 import connectToDB from "./db/connectToDB.js";
 import cors from "cors";
 import dotenv from "dotenv";
-import session from "express-session";
+// import session from "express-session";
 import passport from "passport";
 
 import checkRoutes from "./routes/checkRoutes.js";

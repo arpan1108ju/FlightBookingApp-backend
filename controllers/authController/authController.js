@@ -1,8 +1,10 @@
 import expressAsyncHandler from "express-async-handler";
 import passport from "passport";
 import { createUser, findUserByEmail } from "../userController.js/userController.js";
-import { generateToken } from "../../utils/generateJwtToken.js";
+import { generateAccessToken } from "../../utils/generateAccessToken.js";
+import { generateRefreshToken } from "../../utils/generateRefershToken.js";
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 export const signup = expressAsyncHandler(async(req,res)=>{
     
@@ -34,12 +36,15 @@ export const signup = expressAsyncHandler(async(req,res)=>{
     }
 
     console.log("generating token in signup...");
-    const token = generateToken(newUser.email);
+
+    const accessToken = generateAccessToken(newUser.email);
+    const refreshToken = await generateRefreshToken(newUser.email);
 
     const responseUserObj = {
         username : newUser.username,
         email : newUser.email,
-        token : token,
+        token : accessToken,
+        refreshToken : refreshToken,
         login_type : 'signup' 
     }
 
@@ -72,13 +77,15 @@ export const login =  expressAsyncHandler(async(req,res)=>{
     }
 
     console.log("generating token in login...");
-    const token = generateToken(userExists.email);
 
+    const accessToken = generateAccessToken(userExists.email);
+    const refreshToken = await generateRefreshToken(userExists.email);
 
     const responseUserObj = {
         username : userExists.username,
         email : userExists.email,
-        token : token,
+        token : accessToken,
+        refreshToken : refreshToken,
         login_type : 'login' 
     }
 
@@ -114,15 +121,48 @@ export const authenticated = passport.authenticate('jwt', { session: false });
 
 export const sendResponseGoogleUser = async (req,res)=>{
     console.log("generating token in google...");
-    const token = generateToken(req.user.email);
+    const accessToken = generateAccessToken(userExists.email);
+    const refreshToken = await generateRefreshToken(userExists.email);
 
     const responseUserObj = {
         username : req.user.username,
         email : req.user.email,
-        token : token,
+        token : accessToken,
+        refreshToken : refreshToken,
         login_type : 'google' 
     }
 
     res.send(responseUserObj);
     // res.redirect('/api/v1/auth/google/success');
 }
+
+export const refreshAccessToken = expressAsyncHandler(async(req,res)=>{
+
+    const refreshToken = req.body.refreshToken;
+
+    console.log(refreshToken);
+    // return;
+
+    if (!refreshToken) {
+      res.status(400);
+      throw new Error('Missing refresh token');
+    }
+  
+    // Verify refresh token (replace with your logic)
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET);
+    const userEmail = decoded.id;
+    const user = await findUserByEmail(userEmail);
+  
+    if (!user || user.refreshToken !== refreshToken) {
+       res.status(401);
+       throw new Error('Invalid refresh token');
+    }
+
+    else if (decoded.exp < Math.floor(Date.now() / 1000)) {
+        res.status(401);
+        throw new Error('Refresh token expired');
+    }
+  
+    const newAccessToken = generateAccessToken(user.email);
+    res.json({ token : newAccessToken });
+})

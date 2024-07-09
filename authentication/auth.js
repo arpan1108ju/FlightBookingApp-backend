@@ -11,7 +11,7 @@ import { findUserByEmail, userExistsOrCreateGoogle } from '../controllers/userCo
 // JWT strategy
 passport.use(new JwtStrategy({
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: process.env.JWT_SECRET
+    secretOrKey: process.env.JWT_ACCESS_TOKEN_SECRET
   }, async (jwt_payload, done) => {
     try {
       console.log("inside jwt strategy");

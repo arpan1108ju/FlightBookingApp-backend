@@ -4,7 +4,7 @@ import passport from "passport";
 import '../../authentication/auth.js';
 import { generateToken } from "../../utils/generateJwtToken.js";
 
-import { signup,login, googleSuccess, googleFailure, logout, isLoggedIn, sendResponseGoogleUser } from "../../controllers/authController/authController.js";
+import { signup,login, googleSuccess, googleFailure, logout, isLoggedIn, sendResponseGoogleUser, refreshAccessToken } from "../../controllers/authController/authController.js";
 
 const router = express.Router();
 
@@ -16,6 +16,7 @@ const router = express.Router();
 router.post('/signup',signup);
 router.post('/login',login);
 
+router.post('/refresh-token',refreshAccessToken);
 
 // ********** google authentication with jwt ***************
 

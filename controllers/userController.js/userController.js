@@ -83,3 +83,23 @@ export const userExistsOrCreateGoogle = expressAsyncHandler(async(profile) => {
     console.log("result exists in google : ",result[0]);
     return result[0];   
 })
+
+
+export const updateUserRefreshToken = expressAsyncHandler(async(email,refreshToken)=>{
+    const query = `MATCH (user:User {email : $email})
+      SET user.refreshToken = $refreshToken
+      RETURN user`
+    ;
+
+    const result = parser.parse(await driver.executeQuery(query,{
+      email : email,
+      refreshToken : refreshToken
+    }));
+
+    if(result.length === 0){
+       const error = new Error("Error updating user refresh token");
+       error.code = 500;
+       throw error;
+    }
+    return result[0];
+})
