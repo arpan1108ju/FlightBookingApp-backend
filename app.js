@@ -8,9 +8,11 @@ import passport from "passport";
 import checkRoutes from "./routes/checkRoutes.js";
 import authRoutes from './routes/authRoutes/authRoutes.js';
 import userRoutes from "./routes/userRoutes/userRoutes.js";
+import airlineRoutes from './routes/airlineRoutes.js';
 
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
-import { authenticated, isLoggedIn } from "./controllers/authController/authController.js";
+import { authenticated } from "./controllers/authController/authController.js";
+
 
 const app = express();
 app.use(cors());
@@ -28,6 +30,7 @@ const PORT = process.env.PORT;
 
 // Routes
 app.use("/api/v1/dev", checkRoutes);
+app.use("/api/v1/airline", airlineRoutes);
 
 app.use('/api/v1/auth',authRoutes);
 
